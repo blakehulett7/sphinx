@@ -26,4 +26,8 @@ func main() {
 
 	hand := []int{2, 9, 10, 4, 98}
 	app.BestFusion(hand)
+
+	fmt.Println()
+	fmt.Println("-------------------")
+	fmt.Println("Et Spiritus Sancti!")
 }

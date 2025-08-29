@@ -9,19 +9,45 @@ type Hand []int
 
 func (app Bridge) BestFusion(hand Hand) (int, error) {
 	slices.Sort(hand)
+	fmt.Println(hand)
 
 	possible_fusions := []Fusion{}
 	for i := 1; i < len(hand); i++ {
 		subject := hand[i-1]
 		targets := hand[i:]
-		possible_fusions = append(possible_fusions, app.PossibleFusions(subject, targets)...)
+		possible_fusions = append(possible_fusions, app.PossibleFusions(subject, targets, hand)...)
 	}
 
+	res := []int{}
 	for _, fusion := range possible_fusions {
-		app.NestedFusions(fusion, hand)
+		// app.NestedFusions(fusion, hand)
+		res = append(res, fusion.ResultId)
 	}
+	fmt.Println(res)
 
 	return 0, nil
+}
+
+func CreateNestedTargets(fusion Fusion, hand []int) []int {
+	m1_found := false
+	m2_found := false
+	targets := []int{}
+
+	for _, card := range hand {
+		if !m1_found && fusion.Material1Id == card {
+			m1_found = true
+			continue
+		}
+
+		if !m2_found && fusion.Material2Id == card {
+			m2_found = true
+			continue
+		}
+
+		targets = append(targets, card)
+	}
+
+	return append(targets, fusion.ResultId)
 }
 
 func (app Bridge) NestedFusions(fusion Fusion, hand []int) []Fusion {
@@ -50,7 +76,7 @@ func (app Bridge) NestedFusions(fusion Fusion, hand []int) []Fusion {
 	return []Fusion{}
 }
 
-func (app Bridge) PossibleFusions(subject int, targets []int) []Fusion {
+func (app Bridge) PossibleFusions(subject int, targets []int, hand []int) []Fusion {
 	fmt.Println(subject, targets)
 
 	fusions := []Fusion{}
@@ -60,7 +86,8 @@ func (app Bridge) PossibleFusions(subject int, targets []int) []Fusion {
 	}
 
 	for _, fusion := range fusions {
-		fmt.Println(fusion.ResultId)
+		nested_targets := CreateNestedTargets(fusion, hand)
+		fmt.Println(fusion.ResultId, nested_targets)
 	}
 	fmt.Println()
 
