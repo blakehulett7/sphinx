@@ -10,47 +10,59 @@ type Hand [5]int
 func (app Bridge) BestFusion(hand Hand) (int, error) {
 	sorted := Sort(hand)
 
-	possible_fusions := []int{}
+	possible_fusions := []Fusion{}
 	for i := 1; i < 5; i++ {
 		subject := sorted[i-1]
 		targets := sorted[i:]
 		possible_fusions = append(possible_fusions, app.PossibleFusions(subject, targets)...)
 	}
-	fmt.Println(possible_fusions)
+
+	for _, fusion := range possible_fusions {
+		app.NestedFusions(fusion, hand[:])
+	}
 
 	return 0, nil
 }
 
-func (app Bridge) NestedFusions(fusion Fusion, targets []int) []int {
-	nested_targets := []int{}
-	for _, target := range targets {
-		if fusion.Material2Id == target {
+func (app Bridge) NestedFusions(fusion Fusion, hand []int) []Fusion {
+	subject := fusion.ResultId
+
+	m1_found := false
+	m2_found := false
+	targets := []int{}
+	for _, card := range hand {
+		if !m1_found && fusion.Material1Id == card {
+			m1_found = true
 			continue
 		}
 
-		nested_targets = append(nested_targets, target)
+		if !m2_found && fusion.Material2Id == card {
+			m2_found = true
+			continue
+		}
+
+		targets = append(targets, card)
 	}
 
-	return app.PossibleFusions(fusion.ResultId, nested_targets)
+	app.PossibleFusions(subject, targets)
+	return []Fusion{}
 }
 
-func (app Bridge) PossibleFusions(subject int, targets []int) []int {
+func (app Bridge) PossibleFusions(subject int, targets []int) []Fusion {
 	fmt.Println(subject, targets)
 
 	fusions := []Fusion{}
 	err := app.Db.Where("material1_id = ? AND material2_id IN ?", subject, targets).Find(&fusions).Error
 	if err != nil {
-		return []int{}
+		return []Fusion{}
 	}
 
-	res := []int{}
 	for _, fusion := range fusions {
 		fmt.Println(fusion.ResultId)
-		res = append(res, fusion.ResultId)
 	}
 	fmt.Println()
 
-	return res
+	return fusions
 }
 
 func Sort(hand Hand) [5]int {
