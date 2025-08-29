@@ -21,6 +21,19 @@ func (app Bridge) BestFusion(hand Hand) (int, error) {
 	return 0, nil
 }
 
+func (app Bridge) NestedFusions(fusion Fusion, targets []int) []int {
+	nested_targets := []int{}
+	for _, target := range targets {
+		if fusion.Material2Id == target {
+			continue
+		}
+
+		nested_targets = append(nested_targets, target)
+	}
+
+	return app.PossibleFusions(fusion.ResultId, nested_targets)
+}
+
 func (app Bridge) PossibleFusions(subject int, targets []int) []int {
 	fmt.Println(subject, targets)
 

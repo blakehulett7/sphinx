@@ -24,6 +24,6 @@ func main() {
 	ColorPrint(Blue, "Connection successful!")
 	fmt.Println()
 
-	hand := [5]int{2, 9, 10, 4, 5}
+	hand := [5]int{2, 9, 10, 4, 98}
 	app.BestFusion(hand)
 }
