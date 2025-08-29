@@ -6,8 +6,6 @@ import (
 )
 
 func CacheManager(comms Comms, interval time.Duration) {
-	fusion_cache := map[[5]int]int{}
-
 	for {
 		select {
 		case <-time.After(interval):

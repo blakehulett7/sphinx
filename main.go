@@ -12,12 +12,18 @@ func main() {
 	fmt.Println("----------------------")
 	fmt.Println()
 
+	app := Bridge{}
+
 	ColorPrint(Blue, "Connecting to db...")
 	db, err := gorm.Open(sqlite.Open("fmr.db"))
 	if err != nil {
 		ColorPrint(Red, fmt.Sprintf("- error connnecting to db: %v", err))
 		ColorPrint(Red, "- returning early...")
 	}
+	app.Db = db
+	ColorPrint(Blue, "Connection successful!")
+	fmt.Println()
 
-	key := [5]int{1, 2, 3, 4, 5}
+	hand := [5]int{1, 2, 3, 4, 5}
+	app.GetBestFusion(hand)
 }
