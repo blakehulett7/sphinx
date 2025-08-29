@@ -5,30 +5,18 @@ import (
 	"time"
 )
 
-var Cache = map[string]any{}
+func CacheManager(comms Comms, interval time.Duration) {
+	fusion_cache := map[[5]int]int{}
 
-func CacheCleaner(interval time.Duration) {
 	for {
-		<-time.After(interval)
+		select {
+		case <-time.After(interval):
+			fmt.Println()
+			ColorPrint(Yellow, "---------------------------")
+			ColorPrint(Yellow, fmt.Sprintf("Clearing cache... interval: %v", interval))
+			ColorPrint(Yellow, "---------------------------")
+			fmt.Println()
+		}
 
-		fmt.Println()
-		ColorPrint(Yellow, "---------------------------")
-		ColorPrint(Yellow, fmt.Sprintf("Clearing cache... interval: %v", interval))
-		ColorPrint(Yellow, "---------------------------")
-		fmt.Println()
-
-		Cache = map[string]any{}
 	}
-}
-
-func WithCache[T any](key string, f func() T) T {
-	cached_result, ok := Cache[key]
-	if ok {
-		return cached_result.(T)
-	}
-
-	result := f()
-	Cache[key] = result
-
-	return result
 }
