@@ -25,7 +25,9 @@ func main() {
 	fmt.Println()
 
 	hand := []int{2, 9, 10, 4, 98}
-	app.BestFusion(hand)
+	starting_weight := 0
+	final_weight := app.BestFusion(hand, starting_weight)
+	fmt.Println(final_weight)
 
 	fmt.Println()
 	fmt.Println("-------------------")

@@ -7,9 +7,24 @@ import (
 
 type Hand []int
 
-func (app Bridge) BestFusion(hand Hand) (int, error) {
+func (app Bridge) BestFusion(hand Hand, current_weight int) int {
 	slices.Sort(hand)
-	fmt.Println(hand)
+	ColorPrint(Green, fmt.Sprintf("%v", hand))
+	ColorPrint(Green, fmt.Sprintf("Current Weight: %v", current_weight))
+
+	cards := []Card{}
+	err := app.Db.Where("id IN ?", hand).Find(&cards).Error
+	if err != nil {
+		panic("invalid hand")
+	}
+
+	for _, card := range cards {
+		fmt.Printf("Id: %d, Weight: %d\n", card.Id, card.Attack)
+		if current_weight < card.Attack {
+			current_weight = card.Attack
+		}
+	}
+	fmt.Println()
 
 	possible_fusions := []Fusion{}
 	for i := 1; i < len(hand); i++ {
@@ -19,13 +34,25 @@ func (app Bridge) BestFusion(hand Hand) (int, error) {
 	}
 
 	res := []int{}
+	nested_hands := [][]int{}
 	for _, fusion := range possible_fusions {
 		// app.NestedFusions(fusion, hand)
 		res = append(res, fusion.ResultId)
+		nested_hands = append(nested_hands, CreateNestedTargets(fusion, hand))
 	}
 	fmt.Println(res)
+	fmt.Println()
 
-	return 0, nil
+	var nested_weight int
+	for _, nested := range nested_hands {
+		nested_weight = app.BestFusion(nested, current_weight)
+	}
+
+	if nested_weight < current_weight {
+		return current_weight
+	}
+
+	return nested_weight
 }
 
 func CreateNestedTargets(fusion Fusion, hand []int) []int {
@@ -71,7 +98,7 @@ func (app Bridge) NestedFusions(fusion Fusion, hand []int) []Fusion {
 
 	nested_hand := append(targets, fusion.ResultId)
 	ColorPrint(Yellow, fmt.Sprintf("----Starting Nested Run %v----\n", nested_hand))
-	app.BestFusion(nested_hand)
+	//app.BestFusion(nested_hand)
 
 	return []Fusion{}
 }
@@ -86,8 +113,9 @@ func (app Bridge) PossibleFusions(subject int, targets []int, hand []int) []Fusi
 	}
 
 	for _, fusion := range fusions {
-		nested_targets := CreateNestedTargets(fusion, hand)
-		fmt.Println(fusion.ResultId, nested_targets)
+		// nested_targets := CreateNestedTargets(fusion, hand)
+		fmt.Println(fusion.Material1Id, "+", fusion.Material2Id, "=", fusion.ResultId)
+		// fmt.Println(nested_targets)
 	}
 	fmt.Println()
 
