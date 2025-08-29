@@ -5,31 +5,30 @@ import (
 	"slices"
 )
 
-type Hand [5]int
+type Hand []int
 
 func (app Bridge) BestFusion(hand Hand) (int, error) {
-	sorted := Sort(hand)
+	slices.Sort(hand)
 
 	possible_fusions := []Fusion{}
-	for i := 1; i < 5; i++ {
-		subject := sorted[i-1]
-		targets := sorted[i:]
+	for i := 1; i < len(hand); i++ {
+		subject := hand[i-1]
+		targets := hand[i:]
 		possible_fusions = append(possible_fusions, app.PossibleFusions(subject, targets)...)
 	}
 
 	for _, fusion := range possible_fusions {
-		app.NestedFusions(fusion, hand[:])
+		app.NestedFusions(fusion, hand)
 	}
 
 	return 0, nil
 }
 
 func (app Bridge) NestedFusions(fusion Fusion, hand []int) []Fusion {
-	subject := fusion.ResultId
-
 	m1_found := false
 	m2_found := false
 	targets := []int{}
+
 	for _, card := range hand {
 		if !m1_found && fusion.Material1Id == card {
 			m1_found = true
@@ -44,7 +43,10 @@ func (app Bridge) NestedFusions(fusion Fusion, hand []int) []Fusion {
 		targets = append(targets, card)
 	}
 
-	app.PossibleFusions(subject, targets)
+	nested_hand := append(targets, fusion.ResultId)
+	ColorPrint(Yellow, fmt.Sprintf("----Starting Nested Run %v----\n", nested_hand))
+	app.BestFusion(nested_hand)
+
 	return []Fusion{}
 }
 
