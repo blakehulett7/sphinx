@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type Card struct {
 	Id            int `json:"CardId"`
 	CardName      string
@@ -13,4 +15,8 @@ type Card struct {
 	Attribute     string
 	Password      string
 	StarchipCost  int
+}
+
+func (c Card) String() string {
+	return fmt.Sprintf("%s: %d", c.CardName, c.Attack)
 }
