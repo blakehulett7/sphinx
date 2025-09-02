@@ -48,11 +48,11 @@ func (app Bridge) BestFusion(hand Hand, current_weight int) int {
 		nested_weight = app.BestFusion(nested, current_weight)
 	}
 
-	if nested_weight < current_weight {
-		return current_weight
+	if nested_weight > current_weight {
+		return nested_weight
 	}
 
-	return nested_weight
+	return current_weight
 }
 
 func CreateNestedTargets(fusion Fusion, hand []int) []int {
