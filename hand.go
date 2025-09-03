@@ -9,8 +9,6 @@ type Hand []int
 
 func (app Bridge) BestFusion(hand Hand, current_weight int) int {
 	slices.Sort(hand)
-	ColorPrint(Green, fmt.Sprintf("%v", hand))
-	ColorPrint(Green, fmt.Sprintf("Current Weight: %v", current_weight))
 
 	cards := []Card{}
 	err := app.Db.Where("id IN ?", hand).Find(&cards).Error
@@ -19,12 +17,10 @@ func (app Bridge) BestFusion(hand Hand, current_weight int) int {
 	}
 
 	for _, card := range cards {
-		fmt.Printf("Id: %d, Weight: %d\n", card.Id, card.Attack)
 		if current_weight < card.Attack {
 			current_weight = card.Attack
 		}
 	}
-	fmt.Println()
 
 	possible_fusions := []Fusion{}
 	for i := 1; i < len(hand); i++ {
@@ -78,8 +74,6 @@ func CreateNestedTargets(fusion Fusion, hand []int) []int {
 }
 
 func (app Bridge) PossibleFusions(subject int, targets []int, hand []int) []Fusion {
-	fmt.Println(subject, targets)
-
 	fusions := []Fusion{}
 	err := app.Db.Where("material1_id = ? AND material2_id IN ?", subject, targets).Find(&fusions).Error
 	if err != nil {
