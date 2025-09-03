@@ -80,12 +80,5 @@ func (app Bridge) PossibleFusions(subject int, targets []int, hand []int) []Fusi
 		return []Fusion{}
 	}
 
-	for _, fusion := range fusions {
-		// nested_targets := CreateNestedTargets(fusion, hand)
-		fmt.Println(fusion.Material1Id, "+", fusion.Material2Id, "=", fusion.ResultId)
-		// fmt.Println(nested_targets)
-	}
-	fmt.Println()
-
 	return fusions
 }
