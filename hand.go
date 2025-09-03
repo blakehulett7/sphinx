@@ -29,15 +29,10 @@ func (app Bridge) BestFusion(hand Hand, current_weight int) int {
 		possible_fusions = append(possible_fusions, app.PossibleFusions(subject, targets, hand)...)
 	}
 
-	res := []int{}
 	nested_hands := [][]int{}
 	for _, fusion := range possible_fusions {
-		// app.NestedFusions(fusion, hand)
-		res = append(res, fusion.ResultId)
 		nested_hands = append(nested_hands, CreateNestedTargets(fusion, hand))
 	}
-	fmt.Println(res)
-	fmt.Println()
 
 	var nested_weight int
 	for _, nested := range nested_hands {
@@ -56,18 +51,18 @@ func CreateNestedTargets(fusion Fusion, hand []int) []int {
 	m2_found := false
 	targets := []int{}
 
-	for _, card := range hand {
-		if !m1_found && fusion.Material1Id == card {
+	for _, card_id := range hand {
+		if !m1_found && fusion.Material1Id == card_id {
 			m1_found = true
 			continue
 		}
 
-		if !m2_found && fusion.Material2Id == card {
+		if !m2_found && fusion.Material2Id == card_id {
 			m2_found = true
 			continue
 		}
 
-		targets = append(targets, card)
+		targets = append(targets, card_id)
 	}
 
 	return append(targets, fusion.ResultId)
