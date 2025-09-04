@@ -34,14 +34,20 @@ func main() {
 
 	hand_keys := deck.AllHandKeys()
 
-	hand_values := make(map[HandKey]int)
-	initial_weight := 0
+	key_channel := make(chan HandKey)
+	value_channel := make(chan MapEntry)
+	done_channel := make(chan map[HandKey]int)
+
+	go KeyMapper(key_channel, value_channel, deck, app)
+	go WriteKey(value_channel, done_channel)
+
 	for i, key := range hand_keys {
 		fmt.Println(i)
-		hand := deck.GetHand(key)
-		value := app.BestFusion(hand, initial_weight)
-		hand_values[key] = value
+		key_channel <- key
 	}
+
+	hand_values := <-done_channel
+	fmt.Println(hand_values)
 
 	fmt.Println()
 	fmt.Println("-------------------")
