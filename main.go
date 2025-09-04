@@ -36,7 +36,7 @@ func main() {
 
 	hand_keys := AllHandKeys(deck)
 	key_channel := make(chan HandKey)
-	value_channel := make(chan int)
+	value_channel := make(chan MapEntry)
 	done_channel := make(chan map[string]int)
 
 	go KeyMapper(key_channel, value_channel, deck, app)
