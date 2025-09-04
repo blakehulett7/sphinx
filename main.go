@@ -46,6 +46,7 @@ func main() {
 		key_channel <- key
 	}
 
+	close(key_channel)
 	hand_values := <-done_channel
 	fmt.Println(hand_values)
 
