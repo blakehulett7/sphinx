@@ -7,7 +7,7 @@ import (
 
 type Deck [40]int
 
-func (d Deck) AllHandKeys() []HandKey {
+func AllHandKeys(d Deck) []HandKey {
 	var (
 		c1    = 0
 		c2    = 1

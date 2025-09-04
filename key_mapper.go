@@ -7,7 +7,7 @@ type MapEntry struct {
 	Value int
 }
 
-func KeyMapper(key_channel chan HandKey, value_channel chan MapEntry, deck Deck, app Bridge) {
+func KeyMapper(key_channel chan HandKey, value_channel chan int, deck Deck, app Bridge) {
 	producer_done := make(chan bool)
 	num_producer_cores := 10
 	for range num_producer_cores {
@@ -22,7 +22,7 @@ func KeyMapper(key_channel chan HandKey, value_channel chan MapEntry, deck Deck,
 	close(value_channel)
 }
 
-func MapKey(key_channel chan HandKey, value_channel chan MapEntry, producer_done chan bool, deck Deck, app Bridge) {
+func MapKey(key_channel chan HandKey, value_channel chan int, producer_done chan bool, deck Deck, app Bridge) {
 	for {
 		key, open := <-key_channel
 		if !open {
@@ -34,21 +34,32 @@ func MapKey(key_channel chan HandKey, value_channel chan MapEntry, producer_done
 		hand := deck.GetHand(key)
 		value := app.BestFusion(hand, initial_weight)
 
-		result := MapEntry{key, value}
-		value_channel <- result
+		value_channel <- value
 	}
 }
 
-func WriteKey(value_channel chan MapEntry, done_channel chan map[HandKey]int) {
-	result := make(map[HandKey]int)
+func SendKeys(key_channel chan HandKey, keys []HandKey) {
+	for _, key := range keys {
+		key_channel <- key
+	}
+	close(key_channel)
+}
+
+func WriteKey(value_channel chan int, done_channel chan map[string]int) {
+	result := make(map[string]int)
 	for {
 		to_write, open := <-value_channel
 		if !open {
 			break
 		}
 
-		ColorPrint(Green, fmt.Sprintf("Saving key %v", to_write.Key))
-		result[to_write.Key] = to_write.Value
+		_, exists := result[fmt.Sprint(to_write)]
+		if !exists {
+			result[fmt.Sprint(to_write)] = 1
+			continue
+		}
+
+		result[fmt.Sprint(to_write)]++
 	}
 
 	done_channel <- result

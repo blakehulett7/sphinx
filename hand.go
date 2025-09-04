@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"slices"
 )
 
@@ -14,6 +15,10 @@ func (h Hand) Key() [5]int {
 		key[i] = id
 	}
 	return key
+}
+
+func (hk HandKey) String() string {
+	return fmt.Sprintf("[%d %d %d %d %d]", hk[0], hk[1], hk[2], hk[3], hk[4])
 }
 
 func (app Bridge) BestFusion(hand Hand, current_weight int) int {
