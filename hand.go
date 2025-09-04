@@ -6,6 +6,16 @@ import (
 
 type Hand []int
 
+type HandKey [5]int
+
+func (h Hand) Key() [5]int {
+	var key [5]int
+	for i, id := range h {
+		key[i] = id
+	}
+	return key
+}
+
 func (app Bridge) BestFusion(hand Hand, current_weight int) int {
 	slices.Sort(hand)
 

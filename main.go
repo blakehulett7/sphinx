@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -24,10 +25,23 @@ func main() {
 	ColorPrint(Blue, "Connection successful!")
 	fmt.Println()
 
-	hand := []int{2, 9, 10, 4, 98}
-	starting_weight := 0
-	final_weight := app.BestFusion(hand, starting_weight)
-	fmt.Println(final_weight)
+	r := rand.New(rand.NewSource(1))
+	var deck Deck
+	for i := range 40 {
+		num := r.Intn(723)
+		deck[i] = num
+	}
+
+	hand_keys := deck.AllHandKeys()
+
+	hand_values := make(map[HandKey]int)
+	initial_weight := 0
+	for i, key := range hand_keys {
+		fmt.Println(i)
+		hand := deck.GetHand(key)
+		value := app.BestFusion(hand, initial_weight)
+		hand_values[key] = value
+	}
 
 	fmt.Println()
 	fmt.Println("-------------------")
