@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
+	"os"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -48,7 +50,16 @@ func main() {
 
 	close(key_channel)
 	hand_values := <-done_channel
-	fmt.Println(hand_values)
+
+	data, err := json.MarshalIndent(hand_values, "", "  ")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	filepath := "sample_deck.json"
+	fmt.Println("Writing...")
+	os.WriteFile(filepath, data, 0644)
+	fmt.Println("Written")
 
 	fmt.Println()
 	fmt.Println("-------------------")
