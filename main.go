@@ -1,10 +1,8 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"math/rand"
-	"os"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
