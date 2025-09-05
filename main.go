@@ -34,27 +34,7 @@ func main() {
 		deck[i] = num
 	}
 
-	hand_keys := AllHandKeys(deck)
-	key_channel := make(chan HandKey)
-	value_channel := make(chan MapEntry)
-	done_channel := make(chan map[string]int)
-
-	go KeyMapper(key_channel, value_channel, deck, app)
-	go SendKeys(key_channel, hand_keys)
-	go WriteKey(value_channel, done_channel)
-
-	hand_values := <-done_channel
-
-	data, err := json.MarshalIndent(hand_values, "", "    ")
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	filepath := "sample_deck.json"
-	fmt.Println("Writing...")
-	os.WriteFile(filepath, data, 0644)
-	fmt.Println("Written")
+	app.EvaluateDeck(deck)
 
 	fmt.Println()
 	fmt.Println("-------------------")

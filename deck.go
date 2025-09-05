@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"slices"
 )
 
@@ -51,6 +53,30 @@ func AllHandKeys(d Deck) []HandKey {
 func (d Deck) DistinctHands() [][]int {
 	var result [][]int
 	return result
+}
+
+func (app Bridge) EvaluateDeck(d Deck) {
+	hand_keys := AllHandKeys(d)
+	key_channel := make(chan HandKey)
+	value_channel := make(chan MapEntry)
+	done_channel := make(chan map[string]int)
+
+	go KeyMapper(key_channel, value_channel, d, app)
+	go SendKeys(key_channel, hand_keys)
+	go WriteKey(value_channel, done_channel)
+
+	hand_values := <-done_channel
+
+	data, err := json.MarshalIndent(hand_values, "", "    ")
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	filepath := "sample_deck.json"
+	fmt.Println("Writing...")
+	os.WriteFile(filepath, data, 0644)
+	fmt.Println("Written")
 }
 
 func (d Deck) GetHand(hand_key HandKey) []int {
